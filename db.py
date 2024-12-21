@@ -70,6 +70,14 @@ def can_checkin(cursor,user_id):
 
     return time_delta.days>=1
 
+def get_leaderboard(cursor,user_id, limit=10):
+    max_points_qurery = """
+        SELECT user_id ,points FROM users ORDER BY points DESC LIMIT ?;
+    """
+    cursor.execute(max_points_qurery,[limit])
+    return cursor.fetchall()
+
+
 
 
 def create_db_connection():

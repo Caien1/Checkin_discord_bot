@@ -46,6 +46,23 @@ async def on_message(message):
         await message.channel.send(f"This will load an image in the future")
     
     if message.content.startswith('!leaderboard'):
-                await message.channel.send(f"This will load an image in the future")
+                connection, cursor= create_db_connection();
+                value=get_leaderboard(cursor,message.author.id)
+                close_connection(connection)
+                string =""
+                for idx,row in enumerate(value,start=1):
+                    user=""
+                    try:
+                        user = await client.fetch_user(row[0])
+                    finally:
+                        string += f"Rank {idx}: User ID {user}, Points: {row[1]}\n"
+                    
+                    
+
+                   # string += " ".join(str(val) for val in row)
+                user = await client.fetch_user(830016053739388938)
+                     
+
+                await message.channel.send(f"This will load an image in the future\n{string},{user.bot}")
 
 client.run(token)
