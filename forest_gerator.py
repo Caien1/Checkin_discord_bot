@@ -8,12 +8,10 @@ async def level_selector():
     pass
 
 async def send_imag(avatar_image_url):
-    image = Image.open(backgrounds.get("level")[0]).resize((400,400))
+    image = Image.open(backgrounds.get("level")[3]).resize((400,400))
 
     response =  requests.get(avatar_image_url)
-   # print(response.content)
     avatar = BytesIO(response.content)
-
     avatar = Image.open(avatar).resize((75,75))
     avatar.thumbnail((100,100))
     image.paste(avatar,(0,0))
