@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from db import *
 from forest_gerator import *
 import os
-
+import time
  
 
 load_dotenv()
@@ -53,7 +53,7 @@ async def on_message(message):
 
         embed= discord.Embed(
              title="Your level",
-             description="None"
+             description="Novice"
 
         )
         embed.set_image(url="attachment://image.png")
@@ -61,23 +61,35 @@ async def on_message(message):
         await message.channel.send(embed=embed,file=discord.File(image,filename="image.png",))
     
     if message.content.startswith('!leaderboard'):
+                begin_process= time.time()
                 connection, cursor= create_db_connection();
-                value=get_leaderboard(cursor,message.author.id)
+                value=await get_leaderboard(cursor,message.author.id)
                 close_connection(connection)
+                ##Time consuming part begins-
+                begin_api_call = time.time()
                 string =""
                 for idx,row in enumerate(value,start=1):
                     user=""
                     try:
                         user = await client.fetch_user(row[0])
                     finally:
-                        string += f"Rank {idx}: User ID {user}, Points: {row[1]}\n"
-                    
-                    
+                        string += f"Rank {idx}: **{user.display_name}**, Points: {row[1]}\n"
 
-                   # string += " ".join(str(val) for val in row)
-                user = await client.fetch_user(830016053739388938)
+                end_api_call = time.time()
+                print(f"time taken : {end_api_call-begin_api_call}")   
+                ##Time consuming part ends-
+
+
                      
-
-                await message.channel.send(f"This will load an image in the future\n{string},{user.bot}")
+                embed= discord.Embed(
+                     title="LeaderBoard",
+                    description=string,
+                    color= discord.Color.dark_red(),
+                )
+                
+                embed.set_footer(text="Whats Up")
+                end_process=time.time()
+                print(f"Total time {end_process-begin_process}")
+                await message.channel.send(embed=embed)
 
 client.run(token)
