@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from db import *
 from forest_gerator import *
 import os
-import time
+#import time
  
 
 load_dotenv()
@@ -30,15 +30,15 @@ async def on_message(message):
 
         success,did_exist=main(message.author.id)
         connection, cursor = create_db_connection();
-        print(disply_users(cursor))
+       # print(disply_users(cursor))
         close_connection(connection)
 
         if success and did_exist:
-            await message.channel.send(f"Thanks for the Checkin {message.author}")
+            await message.channel.send(f"Thanks for the Checkin **{message.author.display_name}**")
         elif success:
-            await message.channel.send(f"Welcome to the family perform daily checking to win points {message.author.name}")
+            await message.channel.send(f"Welcome to the family perform daily checking to win points **{message.author.display_name}")
         else:
-            await message.channel.send(f"Please try again later you alredy have done your checkin {message.author.display_name}")
+            await message.channel.send(f"Come back tomorrow you alredy have done your checkin **{message.author.display_name}**")
 
 
              
@@ -47,9 +47,17 @@ async def on_message(message):
     if message.content.startswith('!forest'):
         
         img = message.author.avatar
-        print(type(img))
+        points = ""
+        #print(type(img))
+        connection,cursor = create_db_connection()
+        if(check_if_user_exists(cursor,message.author.id)):
+            points = await get_user_points(cursor,message.author.id)
+        else:
+             message.channel.send("Please !checkin first")
+
+        #print(points[0][0])
     
-        image = await send_imag(img)
+        image= await send_imag(img,points[0][0])
 
         embed= discord.Embed(
              title="Your level",
@@ -60,13 +68,14 @@ async def on_message(message):
 
         await message.channel.send(embed=embed,file=discord.File(image,filename="image.png",))
     
+    
     if message.content.startswith('!leaderboard'):
-                begin_process= time.time()
+             #   begin_process= time.time()
                 connection, cursor= create_db_connection();
                 value=await get_leaderboard(cursor,message.author.id)
                 close_connection(connection)
                 ##Time consuming part begins-
-                begin_api_call = time.time()
+              #  begin_api_call = time.time()
                 string =""
                 for idx,row in enumerate(value,start=1):
                     user=""
@@ -75,9 +84,8 @@ async def on_message(message):
                     finally:
                         string += f"Rank {idx}: **{user.display_name}**, Points: {row[1]}\n"
 
-                end_api_call = time.time()
-                print(f"time taken : {end_api_call-begin_api_call}")   
-                ##Time consuming part ends-
+               # end_api_call = time.time()
+              #  print(f"time taken : {end_api_call-begin_api_call}")   
 
 
                      
@@ -88,8 +96,8 @@ async def on_message(message):
                 )
                 
                 embed.set_footer(text="Whats Up")
-                end_process=time.time()
-                print(f"Total time {end_process-begin_process}")
+              #  end_process=time.time()
+              #  print(f"Total time {end_process-begin_process}")
                 await message.channel.send(embed=embed)
 
 client.run(token)
