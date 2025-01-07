@@ -5,7 +5,6 @@ from forest_gerator import *
 import os
 import datetime
 from http.server import *
-from flask import Flask
  
 
 load_dotenv()
@@ -14,18 +13,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 
-app = Flask(__name__)
 client =discord.Client(intents=intents)
-port = int(os.getenv('PORT', 4000))
-app.run(host='0.0.0.0', port=port, debug=True) 
-
-
-
-
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
-
 
 
 
