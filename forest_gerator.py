@@ -1,7 +1,6 @@
 from PIL import Image,ImageDraw
 from res import backgrounds
 from io import BytesIO
-import requests
 
 def trees_required(points):
     points_to_tree_val =5
